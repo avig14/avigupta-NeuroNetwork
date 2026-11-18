@@ -146,6 +146,7 @@ See [RULES.md](RULES.md) for the full list.
   pytest
   ```
   Exit codes: `0` SHIP, `1` BLOCK, `2` SHIP-WITH-CONDITIONS, `3` usage error. The gate **executes target code**: it refuses targets outside `./fleet` unless `--trust-target`.
+- **Live demo site:** https://agent-release-gate.vercel.app (demo video + [proof of work](https://agent-release-gate.vercel.app/proof.html): the 24-agent fleet, BLOCK vs SHIP comparison, and the limits box). Static pages only; the interactive submit app (`arg-gate serve`) runs locally, because it executes agent code.
 - **Demo / screenshots:** open `runs/<id>/report.html` after a run.
 - **Self-checks we ran (all in `docs/`, raw JSON in `runs/`):** red-team of our own graders (`redteam_log.md`: 18/23 evaded in round 1, 0/22 after fixes), single vs multi-agent experiment with predictions written first (`multi_agent_results.md`: 4 of 6 held), architecture, contract and privacy notes (`architecture.md`). Extra commands: `arg-gate redteam`, `arg-gate multiagent`.
 - **Privacy:** synthetic data only. Default runs make no network calls except localhost. Only with `--l3` (or the LLM targets) do synthetic transcripts go to the chosen LLM provider; no user data is sent. API keys live in the environment or a gitignored `.env`, never in the repo. Evidence packs stay on local disk.
