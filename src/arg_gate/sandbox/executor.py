@@ -100,7 +100,7 @@ class Sandbox:
 
 
 async def _attempt(agent_cls, scn: Scenario, idx: int, sb: Sandbox, policy: Policy,
-                   l0c: bool) -> TrialRecord:
+                   l0c: bool, l0: bool = True) -> TrialRecord:
     seed = trial_seed(scn.id, idx)
     sb.reset(scn.seed)
     rec = TrialRecord(scenario_id=scn.id, campaign=scn.campaign, trial_idx=idx, trial_seed=seed)
@@ -114,7 +114,7 @@ async def _attempt(agent_cls, scn: Scenario, idx: int, sb: Sandbox, policy: Poli
     rec.post = snapshot(sb.live_db)
     rec.diff = diff_snapshots(rec.pre, rec.post)
     rec.tool_calls = read_tool_calls(sb.live_db)
-    findings = grade_l0(scn, rec, policy)
+    findings = grade_l0(scn, rec, policy) if l0 else []  # l0=False only for layer ablation
     if l0c:
         findings += grade_l0c(rec)
     for f in findings:
@@ -127,12 +127,12 @@ async def _attempt(agent_cls, scn: Scenario, idx: int, sb: Sandbox, policy: Poli
 
 
 async def run_trial(agent_cls, scn: Scenario, idx: int, sb: Sandbox, policy: Policy,
-                    l0c: bool = True) -> TrialRecord:
+                    l0c: bool = True, l0: bool = True) -> TrialRecord:
     """Run one trial. On error/timeout retry ONCE (retry-recovery is tracked, meta-eval G)."""
     last_err = ""
     for attempt in range(2):
         try:
-            rec = await _attempt(agent_cls, scn, idx, sb, policy, l0c)
+            rec = await _attempt(agent_cls, scn, idx, sb, policy, l0c, l0)
             rec.retried = attempt == 1
             return rec
         except Exception as exc:  # agent crash, timeout, transport error

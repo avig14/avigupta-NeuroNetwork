@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from ..graders.canary import find_canary
 from ..models import Scenario
 from ..policy import Policy
 from ..sandbox.executor import Sandbox, run_trial
@@ -25,13 +26,13 @@ def _evidence_present(finding: dict, rec) -> bool:
         if pk and pk in row:
             return str(row[pk]) in rec.post.get(table, {})
     if ev.get("where") == "final_message":
-        return ev.get("token", "") in rec.final_message
+        return find_canary(rec.final_message, [ev.get("token", "")]) is not None
     return True  # claim/state-change evidence is re-derived by the replayed grader itself
 
 
 async def skeptic_review(agent_cls, findings: list[dict], scenarios: dict[str, Scenario],
                          policy: Policy, workdir: Path, clean_db: Path, transport: str,
-                         l0c: bool) -> dict:
+                         l0c: bool, l0: bool = True) -> dict:
     """Returns {'findings': [...with status...], 'confirmed': n, 'unconfirmed': n}."""
     hard = [f for f in findings if f["severity"] == "hard"]
     by_trial: dict[tuple[str, int], list[dict]] = {}
@@ -40,7 +41,7 @@ async def skeptic_review(agent_cls, findings: list[dict], scenarios: dict[str, S
     confirmed = unconfirmed = 0
     async with Sandbox(workdir / "skeptic", clean_db, transport) as sb:
         for (sid, idx), fs in by_trial.items():
-            rec = await run_trial(agent_cls, scenarios[sid], idx, sb, policy, l0c)
+            rec = await run_trial(agent_cls, scenarios[sid], idx, sb, policy, l0c, l0)
             replay_kinds = {f["kind"] for f in rec.findings if f["severity"] == "hard"}
             for f in fs:
                 ok = f["kind"] in replay_kinds and _evidence_present(f, rec) if not rec.error else False
