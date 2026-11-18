@@ -24,3 +24,7 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/extensions.json
+
+# arg-gate run artifacts
+.arg_runs/
+runs/
