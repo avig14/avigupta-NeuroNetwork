@@ -7,10 +7,19 @@ from pathlib import Path
 from typing import Any
 
 
+# Plan Step 7 (behaviour profile): disclose AI-generated parts. Here there are none in the verdict path.
+AI_DISCLOSURE = ("Automation disclosure: this report was produced by an automated release gate. Every verdict, "
+                 "finding and number in it is computed by deterministic code (state diff, canary scan, policy rules, "
+                 "pass^k, replay). No language model wrote or graded any of it in this prototype. The tool and its "
+                 "scripted test agents were written with AI coding assistance. Test data is synthetic; nothing "
+                 "leaves this machine.")
+
+
 def write_evidence_pack(state: dict, out_dir: Path, validity: str) -> Path:
     out_dir.mkdir(parents=True, exist_ok=True)
     pack = {
         "validity": validity,
+        "ai_disclosure": AI_DISCLOSURE,
         "verdict": state["verdict"],
         "human": state.get("human"),
         "profile": state["profile"],
@@ -18,6 +27,7 @@ def write_evidence_pack(state: dict, out_dir: Path, validity: str) -> Path:
         "skeptic": state["skeptic"],
         "cost": state["cost"],
         "findings": state["findings"],
+        "handoff_failures": state.get("handoff_failures", []),
         "adversary_log": [{k: v for k, v in a.items() if k != "scenario"} for a in state.get("adversary_log", [])],
         "trials": state["trials"],
         "replay": "Each trial is deterministic: scenario id + trial_seed reproduce it. "
@@ -76,6 +86,9 @@ def render_html(p: dict) -> str:
                   f"<td>{'BREACH' if a['breached'] else 'ignored'}</td><td>{_e(a['finding_kinds'])}</td></tr>"
                   for a in p["adversary_log"])
     l1 = p["l1"]
+    soft = [f for f in p["findings"] if f["severity"] == "soft"]
+    soft_html = ("<h2>Needs a human look (soft findings)</h2><ul>" +
+                 "".join(f"<li><b>{_e(f['kind'])}</b>: {_e(f['message'])}</li>" for f in soft[:10]) + "</ul>") if soft else ""
     return f"""<!doctype html><html><head><meta charset=utf-8><title>Agent Release Gate report</title>
 <style>body{{font:15px system-ui;max-width:980px;margin:24px auto;padding:0 16px;color:#1f2328}}
 .v{{background:{color};color:#fff;padding:14px 18px;border-radius:8px;font-size:22px}}
@@ -91,6 +104,7 @@ code{{font-size:12px}}</style></head><body>
  trial pass rate {l1['trial_pass_rate']:.2f} (95% Wilson {l1['trial_ci'][0]:.2f}-{l1['trial_ci'][1]:.2f}).
  Confirmed hard fails: {v['confirmed_hard']}. Unconfirmed: {v['unconfirmed_hard']}.</p>
 <p><i>{_e(v['validity'])}</i></p>
+<p><i>{_e(AI_DISCLOSURE)}</i></p>{soft_html}
 <h2>Findings (state diff = what the agent DID)</h2>{''.join(blocks) or '<p>No hard findings.</p>'}
 <h2>Adaptive adversary log</h2><table><tr><th>payload</th><th>family</th><th>outcome</th><th>findings</th></tr>{adv or '<tr><td colspan=4>not run in this mode</td></tr>'}</table>
 <h2>Cost</h2><p>{_e(p['cost'])}</p></body></html>"""

@@ -1,7 +1,20 @@
 # TODO / Status: Agent Release Gate (prototype v0.1)
 
 Source of truth: `Year 2 Outclass/plan.md` (v2). Section numbers below point at it.
-Last updated: 18 Nov 2026, ~16:50 IST (freeze 19:00 IST). Git: **nothing committed, nothing pushed** (waiting for the user).
+Last updated: 18 Nov 2026, ~17:30 IST (freeze 19:00 IST). Git: last pushed `a23f903`. Everything below marked NEW is **uncommitted** (waiting for "commit it"). Only pushed commits count at the freeze.
+
+## Update 17:30 IST (final re-verification pass)
+- pytest: **50 passed**.
+- `arg-gate meta` (24-agent fleet): pooled recall 19/19 (Wilson 0.83-1.00); false-SHIP 0/19; false-BLOCK 0/5; hold-out 6/6, 0 false-BLOCK on 2 clean. Frozen hold-out hashes verified at run time. d09 and h06 give SWC, not BLOCK (they still are not SHIP).
+- Meta-eval C mutation score: 5/5 mutants killed, control agent SHIP.
+- Layer ablation: without L0c -> 1 newly missed (d13); without L0 -> 6 newly missed; without L1 -> 3 newly missed (d06, d09, h06). Nothing newly wrongly blocked.
+- Red team (`docs/redteam_log.md`): round 1 evaded 18/23, round 3 evaded 0/22, 0 false positives. Holes found and fixed. Known gaps listed there.
+- Multi-agent experiment (`docs/multi_agent_results.md`): 4 of 6 predictions held, 2 failed (v2 was not slower: ratio 0.989). Verdicts identical 24/24. v2 fails closed under injected faults; v1 crashed 4/4.
+- Docs added: `docs/architecture.md` (diagram, framework matrix, target contract, privacy, cost, non-goals).
+- Report now carries an automation disclosure and lists soft findings.
+- Still needs an LLM or humans: L3 judge, B calibration (50 labels, kappa), cross-family judges, LangSmith, targets #2 and #3, RAG, real-LLM baseline, bigger hold-out, AgentDojo payloads, customer discovery.
+- Still needs the user: enable GitHub Actions, record demo, review `team.json`, commit timing.
+
 
 ## Legend
 `[x]` done and verified  `[~]` done but weak / partial  `[ ]` not done  `[!]` blocked / needs a human
@@ -47,7 +60,7 @@ Last updated: 18 Nov 2026, ~16:50 IST (freeze 19:00 IST). Git: **nothing committ
 - [ ] CI example (GitHub Action snippet using the exit code).
 
 ### Meta-evals (8)
-- [x] Fleet: 9 dev defects + 1 clean; 6 hold-out defects + 2 clean. Hashes in `fleet/manifest.json`, verified at run time.
+- [x] Fleet: 13 dev defects + 3 clean; 6 hold-out defects + 2 clean (24 agents; 19 defects + 5 clean). Hashes in `fleet/manifest.json`, verified at run time.
 - [x] A seeded-defect fleet (recall, precision, false-SHIP, false-BLOCK, Wilson CIs, dev / hold-out / pooled).
 - [x] D skeptic ON vs OFF + evidence faithfulness.
 - [x] F self-consistency (3 audits per agent).
@@ -55,12 +68,12 @@ Last updated: 18 Nov 2026, ~16:50 IST (freeze 19:00 IST). Git: **nothing committ
 - [x] I deltas vs Baseline 1 (**text-only heuristic stand-in, NOT an LLM judge**).
 - [x] Layer ablation: L0c off.
 - [ ] B judge calibration (needs LLM judge + 50 human labels).
-- [ ] C mutation score.
-- [ ] More layer ablations (L0 off, L1 off, skeptic off done via D).
-- [ ] Fleet reaching >= 35 defect instances (have 15).
+- [x] C mutation score: 5/5 (5 mutants only; small).
+- [x] Layer ablations: L0c, L0, L1 off; skeptic off via D.
+- [ ] Fleet reaching >= 35 defect instances (have 19). 24-case floor: 19 defects + 5 clean = 24 total, but plan wants 6 clean (have 5) and hold-out wants ~4 clean (have 2). Not fully met.
 
 ### Tests and docs
-- [x] pytest: 22 tests pass (incl. L0c-unique-catch and skeptic-overturn proofs).
+- [x] pytest: 50 pass (incl. red-team regressions, contract validation, v1/v2 fail-closed, mutation).
 - [ ] README "Your project" section (rules say keep it current).
 - [ ] LangSmith tracing (plan 6.x). Not wired. No key.
 
