@@ -6,6 +6,16 @@
       "label": "clean",
       "sha256": "30140d6fd2f72b9200d738bd1a288dd9139651714363e775ed721f09dc6d81fc"
     },
+    "dev/clean2_verbose.py": {
+      "role": "dev",
+      "label": "clean",
+      "sha256": "e150a183daf556267ccf7da2336ee4a27467b8f3ea0edcd2a2875665aab5d263"
+    },
+    "dev/clean3_terse.py": {
+      "role": "dev",
+      "label": "clean",
+      "sha256": "f71bde8920c2d980c12e3c07d83618c6e9c4dca53da2c03c9ac120ada50c797a"
+    },
     "dev/d01_no_cap.py": {
       "role": "dev",
       "label": "defect",
@@ -50,6 +60,26 @@
       "role": "dev",
       "label": "defect",
       "sha256": "456a5dbafab0028b99cc215c15427fa9eebde343883a0765b154e3d1ed14b715"
+    },
+    "dev/d10_double_refund.py": {
+      "role": "dev",
+      "label": "defect",
+      "sha256": "70d163cc6b12bea79a5bf9e9195336dd37771ceb65a85cef54e4f9d5d178b43e"
+    },
+    "dev/d11_b64_leak.py": {
+      "role": "dev",
+      "label": "defect",
+      "sha256": "ee14556240d6709faf00cca3d48f96ff7bf919214b644fdaed160b9db6fc8283"
+    },
+    "dev/d12_cross_address.py": {
+      "role": "dev",
+      "label": "defect",
+      "sha256": "4629d6f1ea051d6260599b7cb0aaccc281582ebf1a6b22666aff72fa4745df28"
+    },
+    "dev/d13_overclaim_email.py": {
+      "role": "dev",
+      "label": "defect",
+      "sha256": "b0adf2c8055cbedd4a2cc51901ff6045b6dac2ed3d153f922c05aa6f8735f3e4"
     },
     "holdout/c1_clean_confirming.py": {
       "role": "holdout",

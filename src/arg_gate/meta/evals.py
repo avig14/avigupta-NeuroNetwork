@@ -1,9 +1,9 @@
 """Meta-evals: evaluate the evaluator (plan section 8).
 
-Implemented: A (seeded-defect fleet), D (skeptic ablation + evidence faithfulness),
+Implemented: A (seeded-defect fleet), C (mutation score, 5 mutants), D (skeptic ablation + evidence faithfulness),
 F (self-consistency, 3 audits), G (orchestrator health, from our own records), I (deltas vs Baseline 1),
-plus 8.3 #2 (layer removed: L0c off).
-NOT implemented (need an LLM key / human labelers / time): B judge calibration, C mutation score.
+plus 8.3 #2 (layer removed: L0c off, L0 off, L1 off).
+NOT implemented (need an LLM key / human labelers): B judge calibration.
 
 READ THIS BEFORE QUOTING ANY NUMBER:
   * Fleet agents are scripted by the same author as the graders (plan 8.5 asks for different people).
@@ -23,6 +23,7 @@ from types import SimpleNamespace
 from ..graders.l1 import wilson
 from ..orchestrator.graph import run_audit
 from ..skeptic.replay import _evidence_present
+from .mutation import run_mutation
 
 FLEET = Path("fleet")
 MANIFEST = FLEET / "manifest.json"
@@ -129,6 +130,8 @@ async def run_all(workdir: Path, out: Path) -> dict:
         runs[rel] = [await _audit(rel, workdir / f"rep{i}") for i in range(REPS_F)]
     off = {rel: await _audit(rel, workdir / "skeptic_off", skeptic=False) for rel in agents}
     nol0c = {rel: await _audit(rel, workdir / "l0c_off", l0c=False) for rel in agents}
+    nol0 = {rel: await _audit(rel, workdir / "l0_off", l0=False) for rel in agents}
+    nol1 = {rel: await _audit(rel, workdir / "l1_off", l1=False) for rel in agents}
 
     def rows(src: dict[str, dict]) -> list[dict]:
         out_rows = []
@@ -201,12 +204,16 @@ async def run_all(workdir: Path, out: Path) -> dict:
          "baseline_missed": bc["missed"]}
 
     # 8.3 #2: layer removed
-    L = {"l0c_off": _confusion(rows(nol0c)), "full": gc,
-         "newly_missed_without_l0c": sorted(set(_confusion(rows(nol0c))["missed"]) - set(gc["missed"]))}
+    L = {"full": gc}
+    for name, src in (("l0c", nol0c), ("l0", nol0), ("l1", nol1)):
+        c = _confusion(rows(src))
+        L[f"{name}_off"] = c
+        L[f"newly_missed_without_{name}"] = sorted(set(c["missed"]) - set(gc["missed"]))
+        L[f"newly_wrongly_blocked_without_{name}"] = sorted(set(c["wrongly_blocked"]) - set(gc["wrongly_blocked"]))
+    C = await run_mutation(workdir)
 
-    result = {"manifest_tampered": bad, "A": A, "D": D, "F": F, "G": G, "I": I, "layer_ablation": L,
-              "not_implemented": ["B judge calibration (needs LLM judge + human labels)",
-                                  "C mutation score (time)"],
+    result = {"manifest_tampered": bad, "A": A, "D": D, "F": F, "C": C, "G": G, "I": I, "layer_ablation": L,
+              "not_implemented": ["B judge calibration (needs LLM judge + human labels)"],
               "caveats": __doc__}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
@@ -238,6 +245,12 @@ def _summary(r: dict) -> str:
     I = r["I"]
     L += [f"[I] vs Baseline 1 (text-only stand-in): d_recall {I['delta_recall']:+}  d_false_SHIP {I['delta_false_SHIP']:+}",
           f"   baseline missed: {I['baseline_missed']}"]
-    L += [f"[layer] without L0c newly missed: {r['layer_ablation']['newly_missed_without_l0c']}"]
+    C = r["C"]
+    L += [f"[C] mutation score {C['killed']}/{C['n']} = {C['score']:.2f} (Wilson95 {C['wilson95'][0]:.2f}-{C['wilson95'][1]:.2f}); "
+          f"control SHIP: {C['control_ok']}; survivors: {C['survivors']}"]
+    for nm in ("l0c", "l0", "l1"):
+        la = r["layer_ablation"]
+        L += [f"[layer] without {nm.upper()}: newly missed {la['newly_missed_without_' + nm]}, "
+              f"newly wrongly blocked {la['newly_wrongly_blocked_without_' + nm]}"]
     L += ["Not implemented: " + "; ".join(r["not_implemented"])]
     return "\n".join(L)
