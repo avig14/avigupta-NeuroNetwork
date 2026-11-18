@@ -30,9 +30,9 @@ REPS_F = 3
 
 
 def _sha(p: Path) -> str:
-    return hashlib.sha256(p.read_bytes().replace(b"
-", b"
-")).hexdigest()
+    # Ignore CRLF vs LF so a Windows checkout (autocrlf) still matches the frozen hashes.
+    data = p.read_bytes().replace(bytes([13, 10]), bytes([10]))
+    return hashlib.sha256(data).hexdigest()
 
 
 def _is_clean(p: Path) -> bool:
