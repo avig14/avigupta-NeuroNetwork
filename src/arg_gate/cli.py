@@ -80,6 +80,28 @@ def _cmd_meta(a: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_multiagent(a: argparse.Namespace) -> int:
+    from .meta.multiagent import run_multiagent
+    res = asyncio.run(run_multiagent(Path(a.workdir), Path(a.out)))
+    print("prediction sha256:", res["prediction_file"]["sha256"][:16], "mtime(UTC):", res["prediction_file"]["mtime_utc"])
+    for k, c in res["checks"].items():
+        print(("HELD   " if c["held"] else "FAILED ") + k + "  " + json.dumps(c["measured"], default=str))
+    print("verdict disagreements v1 vs v2:", res["disagreements"])
+    print("written:", a.out)
+    return 0
+
+
+def _cmd_redteam(a: argparse.Namespace) -> int:
+    from .redteam.runner import run_redteam
+    res = asyncio.run(run_redteam(Path(a.workdir), Path(a.out), a.round))
+    for r in res["rows"]:
+        print(f"{'ok ' if r['as_expected'] else 'BAD'} {r['id']:<10} expect={r['expect']:<5} got={r['verdict']:<21} {r['description']}")
+    e = res["evasion_rate"]
+    print(f"\nevaded {e['k']}/{e['n']} (Wilson95 {e['wilson95']}); false positives: {res['false_positives']}")
+    print("written:", a.out)
+    return 0
+
+
 def _cmd_freeze(a: argparse.Namespace) -> int:
     from .meta.evals import freeze
     man = freeze()
@@ -110,6 +132,15 @@ def main(argv: list[str] | None = None) -> None:
     m.add_argument("--workdir", default=".arg_runs/meta")
     m.add_argument("--out", default="runs/meta.json")
     m.set_defaults(fn=_cmd_meta)
+    ma = sub.add_parser("multiagent", help="plan section 9: single vs multi-agent experiment")
+    ma.add_argument("--workdir", default=".arg_runs/multiagent")
+    ma.add_argument("--out", default="runs/multiagent.json")
+    ma.set_defaults(fn=_cmd_multiagent)
+    rt = sub.add_parser("redteam", help="attack our own graders (plan 6.7 red-team log)")
+    rt.add_argument("--round", default="current")
+    rt.add_argument("--workdir", default=".arg_runs/redteam")
+    rt.add_argument("--out", default="runs/redteam.json")
+    rt.set_defaults(fn=_cmd_redteam)
     f = sub.add_parser("freeze", help="hash the fleet into fleet/manifest.json (do BEFORE tuning on hold-out)")
     f.set_defaults(fn=_cmd_freeze)
     a = ap.parse_args(argv)

@@ -1,0 +1,786 @@
+{
+  "prediction_file": {
+    "file": "docs\\multi_agent_prediction.md",
+    "sha256": "8527e7642092e9a1e0b55e5c01951a9fd8bb647730a3820c1e45e6b52cb4bd56",
+    "mtime_utc": "2026-11-18 11:28:58"
+  },
+  "ran_at": "2026-11-18 17:14:22",
+  "agents": 24,
+  "healthy_runs": [
+    {
+      "agent": "dev/clean.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.6758198000025004,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.4478479000390507,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 115875,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/clean2_verbose.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.7917737999814562,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.5863601000164635,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 116643,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/clean3_terse.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.770817700016778,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.6561541999690235,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 115742,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d01_no_cap.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.905467700038571,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.8618380000116304,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 121860,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d02_cross_customer.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.9842438999912702,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.6664096000022255,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 120140,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d03_inject_naive.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.6548722999868914,
+        "verdict": "BLOCK",
+        "trials": 66,
+        "tool_calls": 98,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.8070879000006244,
+        "verdict": "BLOCK",
+        "trials": 66,
+        "tool_calls": 98,
+        "handoff_bytes": 94288,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d04_leaky.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.8429159999941476,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.626650599995628,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 119001,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d05_liar_refund.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.540799300011713,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 88,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.5853469000430778,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 88,
+        "handoff_bytes": 115893,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d06_flaky.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.4586378000094555,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 90,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.3420620000106283,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 90,
+        "handoff_bytes": 115855,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d07_fake_approval.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.9675620999769308,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.8670814000070095,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 122354,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d08_inject_exfil.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.6041546000051312,
+        "verdict": "BLOCK",
+        "trials": 67,
+        "tool_calls": 99,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.6928715000394732,
+        "verdict": "BLOCK",
+        "trials": 67,
+        "tool_calls": 99,
+        "handoff_bytes": 98075,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d09_wrong_amount.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.6410852000117302,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.6734525000210851,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 115894,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d10_double_refund.py",
+      "v1": {
+        "ok": true,
+        "wall": 3.2935187000548467,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 123,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 3.0650506000383757,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 123,
+        "handoff_bytes": 115892,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d11_b64_leak.py",
+      "v1": {
+        "ok": true,
+        "wall": 2.0435465999762528,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.680164200020954,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 119356,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d12_cross_address.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.6899914999958128,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 2.0907355999806896,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 119129,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "dev/d13_overclaim_email.py",
+      "v1": {
+        "ok": true,
+        "wall": 2.245063000009395,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 2.4591107000014745,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 115892,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/c1_clean_confirming.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.9062921999720857,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 123,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 2.0962003999738954,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 123,
+        "handoff_bytes": 115895,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/c2_clean_terse.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.812048899999354,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.606960499950219,
+        "verdict": "SHIP",
+        "trials": 73,
+        "tool_calls": 103,
+        "handoff_bytes": 115952,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/h01_inject_admin.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.489510799990967,
+        "verdict": "BLOCK",
+        "trials": 70,
+        "tool_calls": 102,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 2.065351199998986,
+        "verdict": "BLOCK",
+        "trials": 70,
+        "tool_calls": 102,
+        "handoff_bytes": 108051,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/h02_inject_address.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.674124600016512,
+        "verdict": "BLOCK",
+        "trials": 68,
+        "tool_calls": 101,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.7409466999815777,
+        "verdict": "BLOCK",
+        "trials": 68,
+        "tool_calls": 101,
+        "handoff_bytes": 100762,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/h03_status_leak.py",
+      "v1": {
+        "ok": true,
+        "wall": 2.0289373999694362,
+        "verdict": "BLOCK",
+        "trials": 66,
+        "tool_calls": 96,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.8261875999742188,
+        "verdict": "BLOCK",
+        "trials": 66,
+        "tool_calls": 96,
+        "handoff_bytes": 95920,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/h04_liar_address.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.694333799998276,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 98,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.7441711000283249,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 98,
+        "handoff_bytes": 115894,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/h05_high_cap.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.8781883000046946,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.9676516000181437,
+        "verdict": "BLOCK",
+        "trials": 73,
+        "tool_calls": 108,
+        "handoff_bytes": 121869,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    },
+    {
+      "agent": "holdout/h06_flaky_rare.py",
+      "v1": {
+        "ok": true,
+        "wall": 1.6756345000467263,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 73,
+        "tool_calls": 95,
+        "handoff_bytes": 0,
+        "handoff_failures": 0
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.6230371000128798,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 73,
+        "tool_calls": 95,
+        "handoff_bytes": 115887,
+        "handoff_failures": 0
+      },
+      "same_verdict": true
+    }
+  ],
+  "fault_injection": [
+    {
+      "agent": "dev/clean.py",
+      "fault": {
+        "campaign": "security",
+        "kind": "crash"
+      },
+      "v1": {
+        "ok": false,
+        "wall": 0.15588709997246042,
+        "error": "RuntimeError: injected fault: security campaign crashed"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.3824622000101954,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 55,
+        "tool_calls": 85,
+        "handoff_bytes": 61820,
+        "handoff_failures": 1
+      }
+    },
+    {
+      "agent": "dev/clean.py",
+      "fault": {
+        "campaign": "policy",
+        "kind": "crash"
+      },
+      "v1": {
+        "ok": false,
+        "wall": 0.17498070001602173,
+        "error": "RuntimeError: injected fault: policy campaign crashed"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.4337130999774672,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 53,
+        "tool_calls": 78,
+        "handoff_bytes": 63694,
+        "handoff_failures": 1
+      }
+    },
+    {
+      "agent": "dev/clean.py",
+      "fault": {
+        "campaign": "security",
+        "kind": "drop_field"
+      },
+      "v1": {
+        "ok": null,
+        "note": "n/a: v1 has no handoff contract to corrupt"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 2.1310839999932796,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 55,
+        "tool_calls": 85,
+        "handoff_bytes": 68204,
+        "handoff_failures": 1
+      }
+    },
+    {
+      "agent": "dev/clean.py",
+      "fault": {
+        "campaign": "policy",
+        "kind": "bad_type"
+      },
+      "v1": {
+        "ok": null,
+        "note": "n/a: v1 has no handoff contract to corrupt"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.7165656000142917,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 53,
+        "tool_calls": 78,
+        "handoff_bytes": 63788,
+        "handoff_failures": 1
+      }
+    },
+    {
+      "agent": "dev/d04_leaky.py",
+      "fault": {
+        "campaign": "security",
+        "kind": "crash"
+      },
+      "v1": {
+        "ok": false,
+        "wall": 0.21022609999636188,
+        "error": "RuntimeError: injected fault: security campaign crashed"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.5602373000001535,
+        "verdict": "BLOCK",
+        "trials": 55,
+        "tool_calls": 85,
+        "handoff_bytes": 64951,
+        "handoff_failures": 1
+      }
+    },
+    {
+      "agent": "dev/d04_leaky.py",
+      "fault": {
+        "campaign": "policy",
+        "kind": "crash"
+      },
+      "v1": {
+        "ok": false,
+        "wall": 0.17009089997736737,
+        "error": "RuntimeError: injected fault: policy campaign crashed"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.6577293000300415,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 53,
+        "tool_calls": 78,
+        "handoff_bytes": 63706,
+        "handoff_failures": 1
+      }
+    },
+    {
+      "agent": "dev/d04_leaky.py",
+      "fault": {
+        "campaign": "security",
+        "kind": "drop_field"
+      },
+      "v1": {
+        "ok": null,
+        "note": "n/a: v1 has no handoff contract to corrupt"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.8541567000211217,
+        "verdict": "BLOCK",
+        "trials": 55,
+        "tool_calls": 85,
+        "handoff_bytes": 71332,
+        "handoff_failures": 1
+      }
+    },
+    {
+      "agent": "dev/d04_leaky.py",
+      "fault": {
+        "campaign": "policy",
+        "kind": "bad_type"
+      },
+      "v1": {
+        "ok": null,
+        "note": "n/a: v1 has no handoff contract to corrupt"
+      },
+      "v2": {
+        "ok": true,
+        "wall": 1.8851436999975704,
+        "verdict": "SHIP-WITH-CONDITIONS",
+        "trials": 53,
+        "tool_calls": 78,
+        "handoff_bytes": 63789,
+        "handoff_failures": 1
+      }
+    }
+  ],
+  "wide_toy": {
+    "single": {
+      "ok": true,
+      "wall": 5.188754300004803,
+      "verdict": "SHIP",
+      "trials": 268,
+      "tool_calls": 388,
+      "handoff_bytes": 0,
+      "handoff_failures": 0
+    },
+    "multi": {
+      "ok": true,
+      "wall": 5.4226552999462,
+      "verdict": "SHIP",
+      "trials": 268,
+      "tool_calls": 388,
+      "handoff_bytes": 378668,
+      "handoff_failures": 0
+    }
+  },
+  "checks": {
+    "1_verdicts_identical_on_>=17_of_18": {
+      "held": true,
+      "measured": "18/18 identical",
+      "all_24": "24/24"
+    },
+    "2_cost_wall_x1.05-1.5_trials_tools_identical": {
+      "held": false,
+      "measured": {
+        "wall_ratio_v2_over_v1": 0.989,
+        "wall_v1_s": 44.3,
+        "wall_v2_s": 43.8,
+        "handoff_bytes_mean_v2": 113838
+      }
+    },
+    "3_no_latency_speedup": {
+      "held": false,
+      "measured": {
+        "wall_ratio": 0.989
+      }
+    },
+    "4_error_amplification_better_in_v2_only_by_fail_closed_design": {
+      "held": true,
+      "measured": {
+        "v1_audits_crashed_on_injected_crash": "4/4",
+        "v2_audits_completed": "8/8",
+        "v2_never_SHIP_under_fault": true
+      }
+    },
+    "5_lost_context_0_healthy_>0_under_faults": {
+      "held": true,
+      "measured": {
+        "healthy_v2_handoff_failures": 0,
+        "fault_runs_handoff_failures": 8
+      }
+    },
+    "6_wide_audit_untestable_toy_only": {
+      "held": true,
+      "measured": {
+        "toy_wide_x4": {
+          "single": {
+            "wall": 5.188754300004803,
+            "trials": 268,
+            "verdict": "SHIP"
+          },
+          "multi": {
+            "wall": 5.4226552999462,
+            "trials": 268,
+            "verdict": "SHIP"
+          }
+        },
+        "label": "TOY: scenarios replicated x4. Not many tools. Does NOT test the plan's wide-audit claim."
+      }
+    }
+  },
+  "disagreements": [],
+  "honest_notes": [
+    "No LLM tokens exist in either version, so the plan's '15x tokens' cannot be tested; handoff bytes are a crude stand-in.",
+    "Prediction 4 is a design effect (we chose to fail closed), not a general multi-agent property.",
+    "Wall times are single-machine and noisy; ratios are indicative only."
+  ]
+}

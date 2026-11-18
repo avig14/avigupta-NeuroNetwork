@@ -12,6 +12,7 @@ Docs-first notes (verified 18 Nov 2026 against docs.langchain.com, langgraph 1.2
 from __future__ import annotations
 
 import operator
+from dataclasses import replace
 import time
 import uuid
 from pathlib import Path
@@ -30,6 +31,7 @@ from ..policy import load_policy
 from ..report.evidence import write_evidence_pack
 from ..sandbox.executor import Sandbox, ensure_clean_db, load_agent_class, run_trial
 from ..skeptic.replay import skeptic_review
+from .multi import make_run_campaign_v2
 from .verdict import BLOCK, SWC, synthesize
 
 K_FULL, K_SMOKE = 5, 1
@@ -42,6 +44,8 @@ class AuditState(TypedDict, total=False):
     plan: dict
     trials: Annotated[list[dict], operator.add]
     adversary_log: Annotated[list[dict], operator.add]
+    handoffs: Annotated[list[dict], operator.add]          # v2 only: size/time of each JSON handoff
+    handoff_failures: Annotated[list[dict], operator.add]  # v2 only: failed/invalid sub-agent handoffs
     l1: dict
     findings: list[dict]
     skeptic: dict
@@ -86,6 +90,11 @@ async def profile_node(state: AuditState) -> dict:
 async def plan_node(state: AuditState) -> dict:
     cfg = state["cfg"]
     designed = scn_lib.design(state["profile"], cfg["mode"])
+    pad = int(cfg.get("pad", 1))  # toy 'wide audit' knob for the multi-agent experiment: replicate scenarios
+    if pad > 1:
+        for scns in designed.values():
+            scns.extend([replace(s, id=f"{s.id}~{i}") for i in range(1, pad) for s in list(scns)
+                         if not s.id.count("~")])
     return {"plan": {name: [s.to_dict() for s in scns] for name, scns in designed.items()}}
 
 
@@ -96,10 +105,14 @@ def fan_out(state: AuditState) -> list[Send]:
 
 async def run_campaign(inp: CampaignInput) -> dict:
     cfg, name = inp["cfg"], inp["campaign"]
+    fault = cfg.get("inject_fault")
+    if fault and fault.get("campaign") == name and fault["kind"] == "crash":
+        raise RuntimeError(f"injected fault: {name} campaign crashed")  # same code path in v1 and v2
     policy = load_policy(cfg["policy"])
     agent_cls = load_agent_class(cfg["target"])
     clean = ensure_clean_db(Path(cfg["workdir"]))
     l0c = cfg.get("l0c", True)
+    l0 = cfg.get("l0", True)
     k = _k(cfg) if name != "security" else 1
     budget = cfg.get("max_trials", MAX_TRIALS_DEFAULT) // 3
     trials: list[dict] = []
@@ -110,11 +123,11 @@ async def run_campaign(inp: CampaignInput) -> dict:
             for idx in range(k):
                 if len(trials) >= budget:
                     break
-                trials.append((await run_trial(agent_cls, scn, idx, sb, policy, l0c)).to_dict())
+                trials.append((await run_trial(agent_cls, scn, idx, sb, policy, l0c, l0)).to_dict())
         if name == "security" and cfg["mode"] == "full" and cfg.get("adversary", True):
             adv = Adversary(max_attempts=cfg.get("adversary_attempts", 8))
             while (scn := adv.next_scenario()) is not None and len(trials) < budget:
-                rec = (await run_trial(agent_cls, scn, 0, sb, policy, l0c)).to_dict()
+                rec = (await run_trial(agent_cls, scn, 0, sb, policy, l0c, l0)).to_dict()
                 trials.append(rec)
                 hard = [f["kind"] for f in rec["findings"] if f["severity"] == "hard"]
                 adv.observe(scn, bool(hard), hard)
@@ -128,6 +141,8 @@ async def aggregate_node(state: AuditState) -> dict:
     scored = [t for t in trials if t["campaign"] in ("reliability", "policy")]
     l1 = pass_hat_k(scored)
     l1["trial_ci"] = list(l1["trial_ci"])
+    if not state["cfg"].get("l1", True):  # layer ablation: ignore reliability
+        l1 = {**l1, "pass_hat_k": 1.0, "ablated": True}
     return {"l1": l1, "findings": findings}
 
 
@@ -140,7 +155,7 @@ async def skeptic_node(state: AuditState) -> dict:
         scenarios[a["scenario"]["id"]] = _scn(a["scenario"])
     res = await skeptic_review(
         load_agent_class(cfg["target"]), state["findings"], scenarios, load_policy(cfg["policy"]),
-        Path(cfg["workdir"]), ensure_clean_db(Path(cfg["workdir"])), cfg["transport"], cfg.get("l0c", True))
+        Path(cfg["workdir"]), ensure_clean_db(Path(cfg["workdir"])), cfg["transport"], cfg.get("l0c", True), cfg.get("l0", True))
     return {"findings": res["findings"],
             "skeptic": {"enabled": True, "confirmed": res["confirmed"], "unconfirmed": res["unconfirmed"]}}
 
@@ -154,7 +169,8 @@ async def synthesize_node(state: AuditState) -> dict:
             if f["severity"] == "hard":
                 f["status"] = "confirmed"
         sk_on = True
-    return {"verdict": synthesize(findings, state["l1"], load_policy(cfg["policy"]), sk_on),
+    return {"verdict": synthesize(findings, state["l1"], load_policy(cfg["policy"]), sk_on,
+                                  state.get("handoff_failures") or []),
             "findings": findings}
 
 
@@ -183,17 +199,20 @@ async def finalize_node(state: AuditState) -> dict:
         "trials": len(trials), "tool_calls": sum(len(t["tool_calls"]) for t in trials),
         "retries": sum(1 for t in trials if t["retried"]), "errors": sum(1 for t in trials if t["error"]),
         "agent_seconds": round(sum(t["duration_s"] for t in trials), 3),
+        "arch": cfg.get("arch", "single"),
+        "handoff_bytes": sum(h["bytes_req"] + h["bytes_resp"] for h in state.get("handoffs", [])),
+        "handoff_failures": len(state.get("handoff_failures", [])),
         "llm_tokens": 0, "note": "scripted fleet: no LLM tokens; cost = trials, tool calls, seconds"}}
     path = write_evidence_pack(state_view, Path(cfg["out_dir"]), VALIDITY_NOTE)
     return {"evidence_path": str(path)}
 
 
 # ---------------------------------------------------------------- graph
-def build_graph():
+def build_graph(arch: str = "single"):
     b = StateGraph(AuditState)
     b.add_node("profile", profile_node)
     b.add_node("plan", plan_node)
-    b.add_node("run_campaign", run_campaign)
+    b.add_node("run_campaign", make_run_campaign_v2(run_campaign) if arch == "multi" else run_campaign)
     b.add_node("aggregate", aggregate_node)
     b.add_node("skeptic", skeptic_node)
     b.add_node("synthesize", synthesize_node)
@@ -214,13 +233,14 @@ def build_graph():
 async def run_audit(cfg: dict,
                     on_interrupt: Callable[[dict], Awaitable[dict] | dict] | None = None) -> dict:
     """Run one audit. cfg keys: target, policy, mode(full|smoke), k, transport(inproc|http),
-    workdir, out_dir, l0c, skeptic, adversary, human_gate(on|off), max_trials."""
+    workdir, out_dir, l0c, l0, l1, skeptic, adversary, human_gate(on|off), max_trials,
+    arch(single|multi), pad (toy width), inject_fault({campaign, kind})."""
     cfg = {"mode": "full", "transport": "inproc", "human_gate": "on", **cfg}
     audit_id = cfg.get("audit_id") or f"{time.strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}"
     cfg["audit_id"] = audit_id
     cfg["workdir"] = str(Path(cfg["workdir"]) / audit_id)
     cfg["out_dir"] = str(Path(cfg["out_dir"]) / audit_id)
-    graph = build_graph()
+    graph = build_graph(cfg.get("arch", "single"))
     config: Any = {"configurable": {"thread_id": audit_id}}
     result = await graph.ainvoke({"cfg": cfg}, config)
     while result.get("__interrupt__"):
