@@ -30,7 +30,9 @@ REPS_F = 3
 
 
 def _sha(p: Path) -> str:
-    return hashlib.sha256(p.read_bytes()).hexdigest()
+    return hashlib.sha256(p.read_bytes().replace(b"
+", b"
+")).hexdigest()
 
 
 def _is_clean(p: Path) -> bool:
