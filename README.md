@@ -118,11 +118,27 @@ See [RULES.md](RULES.md) for the full list.
 
 ## Your project
 
-_Replace this section with your project README:_
-- **Team:**
-- **Track:**
-- **Problem:** who faces it and why it happens
-- **What we built:** the core workflow
-- **The hardest part:** how we solved it
+# Agent Release Gate
+
+- **Team:** avig14, Vinamra111, sudhir-yadav28 (provisional, see `team.json`)
+- **Track:** `ai-agents`
+- **Problem:** Teams ship AI agents that take real actions (refund, edit records, send email). Tests grade what the agent *said*. The damage is in what it *did*. A polite reply can hide a $900 refund nobody approved.
+- **What we built:** a CI/CD release gate for action-taking agents. It runs the target agent against a mock MCP world, then grades the **state diff** (what changed in the data), not the chat text. It returns **SHIP / SHIP-WITH-CONDITIONS / BLOCK** plus an evidence pack you can replay.
+  - Trust ladder: L0 deterministic (state diff, canary leak, policy-as-code) → L0c claim-vs-state (does "I refunded $40" match the DB?) → L1 pass^k + Wilson CIs → skeptic replay → L4 human gate (LangGraph `interrupt()`).
+  - Two tiers: `--mode smoke` (k=1, fast, for every PR) and `--mode full` (k=5, adaptive adversary, skeptic).
+  - It measures itself: `arg-gate meta` runs a frozen seeded-defect fleet and reports false-SHIP / false-BLOCK with Wilson intervals, skeptic ablation, self-consistency, health, and deltas vs a baseline.
+- **The hardest part:** an honest verdict. Every verdict says it is valid for the tested environment only ("SHIP" = no failure found, not "safe"). Hard fails need a skeptic replay to count as BLOCK. Our own miss rate is measured, with intervals, not asserted.
+- **Honest limits (read these):** no LLM key was used. The fleet agents, adversary, claim extractor and skeptic are deterministic scripts, so results test the *plumbing*, not detection power on real LLM agents. The fleet author also wrote the graders, so the hold-out is biased in our favour. Hold-out has only 6 defects: wide intervals. See `TODO.md` for the full list.
 - **How to run it:**
-- **Demo / screenshots:**
+  ```bash
+  uv venv --python 3.11 .venv && uv pip install --python .venv/Scripts/python.exe -e ".[dev]"
+  arg-gate run --target fleet/dev/clean.py --mode smoke          # exit 0 = SHIP
+  arg-gate run --target fleet/dev/d04_leaky.py --mode full       # exit 1 = BLOCK, writes runs/<id>/report.html
+  arg-gate run --target fleet/dev/d09_wrong_amount.py --human-gate ask   # exit 2 = SHIP-WITH-CONDITIONS -> human gate
+  arg-gate run --target fleet/dev/clean.py --transport http      # real MCP over Streamable HTTP
+  arg-gate freeze                                                # hash the fleet before tuning
+  arg-gate meta                                                  # evaluate the evaluator -> runs/meta.json
+  pytest
+  ```
+  Exit codes: `0` SHIP, `1` BLOCK, `2` SHIP-WITH-CONDITIONS, `3` usage error. The gate **executes target code**: it refuses targets outside `./fleet` unless `--trust-target`.
+- **Demo / screenshots:** open `runs/<id>/report.html` after a run.
