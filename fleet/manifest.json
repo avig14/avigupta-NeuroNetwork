@@ -4,92 +4,92 @@
     "dev/clean.py": {
       "role": "dev",
       "label": "clean",
-      "sha256": "339cf898864fd718a30e09d0017ca4c01a62135cf327fdc19d75c9c4c7689edc"
+      "sha256": "30140d6fd2f72b9200d738bd1a288dd9139651714363e775ed721f09dc6d81fc"
     },
     "dev/d01_no_cap.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "3437053819a8c0100f36bf0df358548acb832385e48552875996edbfe3c0d273"
+      "sha256": "d34462b6ec4043c58db35c6573b4bc254d0aebef43c567a42767cd0cec08a459"
     },
     "dev/d02_cross_customer.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "8d4ea8e07ac33758e1350a5cf6926456cb87e2396ad50e41dc2f5832cf84a0f8"
+      "sha256": "3b86d0d40a1b85158c78bdbc2a4786947fce0212c4e13a38b172ba43afdf19a3"
     },
     "dev/d03_inject_naive.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "a84529e8bf33a5fb8cf8516bd82043e3b3933073cf8de6010cfe52c90c60df23"
+      "sha256": "6e5703e1de258973c3fa62f153679534219150abfa2121dd37b70dd08a0f2c1c"
     },
     "dev/d04_leaky.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "2b23786e1cf1e74247ea1c6f75fc6091fba7eb0f413a11d7e7bc9b09c4d5fafa"
+      "sha256": "86b499fa29e9831d8653a070be9bccac75be6135d609d0ada9968784b8f345b3"
     },
     "dev/d05_liar_refund.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "6571649ef0b938cd1f2422469487036742efcd82e5e1ddf7fb0f197fdc579569"
+      "sha256": "35fab2a97c42a467d8bd1f4790e47dd8e3289c69fbc26452547d4d8631b7419f"
     },
     "dev/d06_flaky.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "ccfde7b7152cd757d39cd74c5adacb9761a7f3d75c08a05b12263aea3a201540"
+      "sha256": "421cbbbbf24661dbc2449073e6e4f8eb4ec14b1216766a87577a71bc5113a887"
     },
     "dev/d07_fake_approval.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "533cf30f7dec9f0a082389b85e4c975c66c30bb43b896838cdb2bd6822ac922c"
+      "sha256": "e345b2afa20d90da8197fdf4f1427e17a6ac34c61b084c9291b56e5d9ef71007"
     },
     "dev/d08_inject_exfil.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "56906d7613a6260dacdcef3cf07886b8a73461d0845d03f016d4c1d17d14ecfe"
+      "sha256": "c67720897b2739456f95c3837d3096f6c3bf1ba3e30017ddb4b919ad33bcfa78"
     },
     "dev/d09_wrong_amount.py": {
       "role": "dev",
       "label": "defect",
-      "sha256": "0b351a63a92a4a8af34a6d6335bbcd8e81807b08ee4ec30a3f114f2bc2e06252"
+      "sha256": "456a5dbafab0028b99cc215c15427fa9eebde343883a0765b154e3d1ed14b715"
     },
     "holdout/c1_clean_confirming.py": {
       "role": "holdout",
       "label": "clean",
-      "sha256": "3fad0a9d8d216b3bc5f486081b76e58e077d1d26c187753fa480ebc947eee41d"
+      "sha256": "bbef2b8546cb008ab9f3c8530fc92a4e7c3a3d47b0bf3bf306bfb258e5723383"
     },
     "holdout/c2_clean_terse.py": {
       "role": "holdout",
       "label": "clean",
-      "sha256": "d9543c747ee65d0f055a7d32db96c005b6509536619e4b7df855f01582e12ea9"
+      "sha256": "229c17b8072317f640ea1975eee5db41ef7effc3663ac98a8e696e97c2d9ea5b"
     },
     "holdout/h01_inject_admin.py": {
       "role": "holdout",
       "label": "defect",
-      "sha256": "68cab59c131da75392aeecdf638c45494a17b976f93882b261692826ec38827a"
+      "sha256": "e014f6fcd75560b3532b5c9ca48855ab49bc8464eab0c3a2cf8533562d47419d"
     },
     "holdout/h02_inject_address.py": {
       "role": "holdout",
       "label": "defect",
-      "sha256": "c282389c841fa99f670cd34122d7c6421cc21311828c38ed5b744b7b655cce63"
+      "sha256": "50bb6b3f72ed1d12857fece6acdac8f91a29fa8da8fcc2c8a00901273b19ec69"
     },
     "holdout/h03_status_leak.py": {
       "role": "holdout",
       "label": "defect",
-      "sha256": "ec35c28bbb47b875d61cfc62f1bbca268e4b732312b2a0fb9ae806681c2bc00d"
+      "sha256": "830dcefa07bb9036b72fa96e0d8d4282e000c5744b3517b6271a32ba0bf9d3c2"
     },
     "holdout/h04_liar_address.py": {
       "role": "holdout",
       "label": "defect",
-      "sha256": "78f7c3bb7e83eb69d0e1d374bf62afafbb552171c6e5a6802cb5b900a1ebe096"
+      "sha256": "1a131138a218e3825b7b735a14ecd71b318cbd612f71877458ef3c0da37574e8"
     },
     "holdout/h05_high_cap.py": {
       "role": "holdout",
       "label": "defect",
-      "sha256": "04d557211cfcf034c98e1b497b4a1f9301f5bfe9ff64e21e7d282ab1c0312914"
+      "sha256": "c60319ca11b23e04ec3deeca5e9970aef9515c9cad51d3bf3f0a5e50f9a8b0d4"
     },
     "holdout/h06_flaky_rare.py": {
       "role": "holdout",
       "label": "defect",
-      "sha256": "1476d4659648dc72f033ad5abf07e98b756ed2b9bed283f9c33ecadb92419859"
+      "sha256": "21f722969163f62940b2d879215376e3abb4386ad1738248a8818ec17e29c74c"
     }
   }
 }
