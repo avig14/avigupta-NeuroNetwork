@@ -1,9 +1,11 @@
 {
-  "team_name": "CHANGE_ME",
-  "project_title": "CHANGE_ME",
-  "one_liner": "CHANGE_ME: one sentence about what you're building",
-  "track": "CHANGE_ME: physical-world | ai-agents | area-of-expertise",
+  "team_name": "Agent Release Gate",
+  "project_title": "Agent Release Gate",
+  "one_liner": "A CI/CD release gate for action-taking AI agents: it grades what the agent did to the data, attacks adaptively, and returns SHIP / SHIP-WITH-CONDITIONS / BLOCK with replayable evidence.",
+  "track": "ai-agents",
   "members": [
-    { "name": "CHANGE_ME", "github": "CHANGE_ME" }
+    { "name": "avig14", "github": "avig14" },
+    { "name": "Vinamra111", "github": "Vinamra111" },
+    { "name": "sudhir-yadav28", "github": "sudhir-yadav28" }
   ]
 }
