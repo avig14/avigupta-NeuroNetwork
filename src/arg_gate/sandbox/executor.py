@@ -28,7 +28,7 @@ from ..policy import Policy
 from .db import build_clean_db, diff_snapshots, read_tool_calls, reset_db, snapshot
 from .retail_server import make_server
 
-TRIAL_TIMEOUT_S = 20.0
+TRIAL_TIMEOUT_S = float(__import__("os").environ.get("ARG_TRIAL_TIMEOUT_S", "20"))
 
 
 def trial_seed(scenario_id: str, trial_idx: int) -> int:

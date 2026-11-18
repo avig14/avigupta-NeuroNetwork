@@ -125,10 +125,11 @@ See [RULES.md](RULES.md) for the full list.
 - **Problem:** Teams ship AI agents that take real actions (refund, edit records, send email). Tests grade what the agent *said*. The damage is in what it *did*. A polite reply can hide a $900 refund nobody approved.
 - **What we built:** a CI/CD release gate for action-taking agents. It runs the target agent against a mock MCP world, then grades the **state diff** (what changed in the data), not the chat text. It returns **SHIP / SHIP-WITH-CONDITIONS / BLOCK** plus an evidence pack you can replay.
   - Trust ladder: L0 deterministic (state diff, canary leak, policy-as-code) → L0c claim-vs-state (does "I refunded $40" match the DB?) → L1 pass^k + Wilson CIs → skeptic replay → L4 human gate (LangGraph `interrupt()`).
+  - Optional L3 LLM judge (`--l3`): reads tool calls, tool results, DB diff and reply. It can only ADD soft findings, never clear or create a BLOCK. Judge: `openai/gpt-oss-120b` on Groq (needs `GROQ_API_KEY`). See `docs/llm_layer.md`.
   - Two tiers: `--mode smoke` (k=1, fast, for every PR) and `--mode full` (k=5, adaptive adversary, skeptic).
   - It measures itself: `arg-gate meta` runs a frozen seeded-defect fleet and reports false-SHIP / false-BLOCK with Wilson intervals, skeptic ablation, self-consistency, health, and deltas vs a baseline.
 - **The hardest part:** an honest verdict. Every verdict says it is valid for the tested environment only ("SHIP" = no failure found, not "safe"). Hard fails need a skeptic replay to count as BLOCK. Our own miss rate is measured, with intervals, not asserted.
-- **Honest limits (read these):** no LLM key was used. The fleet agents, adversary, claim extractor and skeptic are deterministic scripts, so results test the *plumbing*, not detection power on real LLM agents. The fleet author also wrote the graders, so the hold-out is biased in our favour. Hold-out has only 6 defects: wide intervals. See `TODO.md` for the full list.
+- **Honest limits (read these):** the core gate (L0, L0c, L1, skeptic, adversary) is deterministic code. The scripted fleet agents test the *plumbing*. L3 was run live on Groq, but only on small samples (`docs/llm_layer.md`). The L3 judge added little recall on our sample; the deterministic layers carry the verdict. The fleet author also wrote the graders, so the hold-out is biased in our favour. Hold-out has only 6 defects: wide intervals. See `TODO.md` for the full list.
 - **How to run it:**
   ```bash
   uv venv --python 3.11 .venv && uv pip install --python .venv/Scripts/python.exe -e ".[dev]"
@@ -138,10 +139,14 @@ See [RULES.md](RULES.md) for the full list.
   arg-gate run --target fleet/dev/clean.py --transport http      # real MCP over Streamable HTTP
   arg-gate freeze                                                # hash the fleet before tuning
   arg-gate meta                                                  # evaluate the evaluator -> runs/meta.json
+  arg-gate replay runs/<id>/evidence.json                        # re-run the trials behind a verdict
+  GROQ_API_KEY=... arg-gate run --target fleet/dev/d05_liar_refund.py --mode smoke --l3 --l3-max 6   # + LLM judge
+  arg-gate llm-eval --only holdout/ --per-agent 4                # judge vs baseline on the fleet
+  arg-gate judge-redteam                                         # try to fool the judge
   pytest
   ```
   Exit codes: `0` SHIP, `1` BLOCK, `2` SHIP-WITH-CONDITIONS, `3` usage error. The gate **executes target code**: it refuses targets outside `./fleet` unless `--trust-target`.
 - **Demo / screenshots:** open `runs/<id>/report.html` after a run.
 - **Self-checks we ran (all in `docs/`, raw JSON in `runs/`):** red-team of our own graders (`redteam_log.md`: 18/23 evaded in round 1, 0/22 after fixes), single vs multi-agent experiment with predictions written first (`multi_agent_results.md`: 4 of 6 held), architecture, contract and privacy notes (`architecture.md`). Extra commands: `arg-gate redteam`, `arg-gate multiagent`.
-- **Privacy:** synthetic data only. No LLM, no network calls except localhost. Evidence packs stay on local disk.
-- **AI disclosure:** the gate's verdicts are computed by deterministic code, not a language model. The code and the scripted test agents were written with AI coding assistance.
+- **Privacy:** synthetic data only. Default runs make no network calls except localhost. Only with `--l3` (or the LLM targets) do synthetic transcripts go to the chosen LLM provider; no user data is sent. API keys live in the environment or a gitignored `.env`, never in the repo. Evidence packs stay on local disk.
+- **AI disclosure:** the gate's verdict is computed by deterministic code. The optional L3 LLM judge only adds soft findings for a human; with `--l3` the evidence pack says so. The code and the scripted test agents were written with AI coding assistance.

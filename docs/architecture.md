@@ -30,7 +30,7 @@ graph TD;
 | Skeptic | yes | Deterministic replay of each hard finding. Unreproducible findings are downgraded. |
 | L4 human gate | yes | `interrupt()` on SHIP-WITH-CONDITIONS. |
 | L2 trajectory | **no** | |
-| L3 LLM judge | **no** (no API key) | |
+| L3 LLM judge | yes (opt-in `--l3`) | Reads calls, tool results, DB diff, reply in an untrusted-data wrapper. Soft findings only. See `llm_layer.md`. |
 
 ## Verdict rules (`orchestrator/verdict.py`)
 1. Confirmed hard finding → BLOCK (exit 1).
@@ -63,14 +63,14 @@ A target is one Python file under `fleet/`. The gate imports it and runs it, so 
 
 ## Cost per audit (plan Step 8, "Agent FinOps")
 Measured, not estimated: `docs/results/multiagent.json` holds wall time, trials and tool calls for each of the 24 fleet agents.
-LLM tokens are **0** because there is no LLM anywhere in the loop. A real-LLM audit would cost tokens we cannot quote.
+LLM tokens are **0** by default (no LLM in the loop). With `--l3` the pack records real tokens from the provider's usage field (`cost.llm`): about 1.1k input + 0.1k output per judged trial; `--l3-max` caps it. Groq free plan limits: 8K tokens/min, 200K/day, so about 100 judged trials a day.
 Trial budget cap: `--max-trials` (default 400). Smoke mode: 1 trial per scenario.
 
 ## Privacy and data handling (handbook: disclosed privacy practices)
 - All data is synthetic (fake customers, fake orders, a fake canary string). No real customer data is used or stored.
 - Each trial copies the database into `.arg_runs/` on local disk. Nothing is sent over the network except localhost for the optional HTTP transport.
 - Evidence packs (`evidence.json`, `report.html`) contain full transcripts and DB diffs. Treat them as sensitive if you ever point the gate at real data. Delete `.arg_runs/` and `runs/` to remove them.
-- No analytics, no third-party service, no LLM call.
+- No analytics. No LLM call unless you pass `--l3` or audit an LLM target; then synthetic transcripts go to that provider.
 
 ## Trust boundary and non-goals (plan 6.9)
 - The gate **executes target code**. It refuses a target outside `./fleet` unless `--trust-target` is passed. Do not audit code you do not trust; a hostile target could edit the DB file or the harness.

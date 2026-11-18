@@ -26,6 +26,8 @@ from .. import VALIDITY_NOTE, __version__
 from ..campaigns import scenarios as scn_lib
 from ..campaigns.adversary import Adversary
 from ..graders.l1 import pass_hat_k
+from ..graders import l3 as l3_lib
+from ..llm import METER, default_model
 from ..models import Scenario
 from ..policy import load_policy
 from ..report.evidence import write_evidence_pack
@@ -49,6 +51,7 @@ class AuditState(TypedDict, total=False):
     l1: dict
     findings: list[dict]
     skeptic: dict
+    llm: dict
     verdict: dict
     human: dict
     evidence_path: str
@@ -160,6 +163,45 @@ async def skeptic_node(state: AuditState) -> dict:
             "skeptic": {"enabled": True, "confirmed": res["confirmed"], "unconfirmed": res["unconfirmed"]}}
 
 
+async def l3_node(state: AuditState) -> dict:
+    """Optional L3 LLM judge. Adds SOFT findings only (see graders/l3.py guardrails). Off unless cfg['l3']."""
+    cfg = state["cfg"]
+    if not cfg.get("l3"):
+        return {"llm": {"enabled": False}}
+    policy = load_policy(cfg["policy"])
+    scenarios = {sd["id"]: sd for scns in state["plan"].values() for sd in scns}
+    picked, seen = [], set()
+    for t in state["trials"]:  # first trial of each scenario; adversary scenarios are not judged
+        if t["scenario_id"] in scenarios and t["scenario_id"] not in seen and not t["error"]:
+            seen.add(t["scenario_id"])
+            picked.append(t)
+    picked = picked[: int(cfg.get("l3_max", 40))]
+    before = METER.snapshot()
+    verdicts = await l3_lib.judge_many([(scenarios[t["scenario_id"]], t) for t in picked], policy,
+                                       cfg.get("l3_model"), int(cfg.get("l3_concurrency", 8)))
+    new, rows = [], []
+    for t, v in zip(picked, verdicts):
+        f = l3_lib.to_finding(t["scenario_id"], t["trial_idx"], v, policy)
+        det_hard = any(x["severity"] == "hard" for x in t["findings"])
+        if f is not None:
+            new.append(f.to_dict())
+        rows.append({"scenario_id": t["scenario_id"], "trial_idx": t["trial_idx"], "det_hard": det_hard,
+                     "violation": bool(v.get("violation")) if "error" not in v else None,
+                     "kind": v.get("kind"), "confidence": v.get("confidence"),
+                     "evidence": v.get("evidence", ""), "error": v.get("error")})
+    after = METER.snapshot()
+    errs = sum(1 for r in rows if r["error"])
+    return {"findings": state["findings"] + new,
+            "llm": {"enabled": True, "model": cfg.get("l3_model") or default_model(), "judged": len(rows),
+                    "flagged": sum(1 for r in rows if r["violation"]), "errors": errs,
+                    "judge_only_flags": sum(1 for r in rows if r["violation"] and not r["det_hard"]),
+                    "agrees_with_l0": sum(1 for r in rows if r["violation"] and r["det_hard"]),
+                    "input_tokens": after["input_tokens"] - before["input_tokens"],
+                    "output_tokens": after["output_tokens"] - before["output_tokens"],
+                    "rows": rows,
+                    "note": "Soft findings only: the judge can add SHIP-WITH-CONDITIONS, never clear a finding."}}
+
+
 async def synthesize_node(state: AuditState) -> dict:
     cfg = state["cfg"]
     sk_on = state["skeptic"].get("enabled", False)
@@ -202,7 +244,9 @@ async def finalize_node(state: AuditState) -> dict:
         "arch": cfg.get("arch", "single"),
         "handoff_bytes": sum(h["bytes_req"] + h["bytes_resp"] for h in state.get("handoffs", [])),
         "handoff_failures": len(state.get("handoff_failures", [])),
-        "llm_tokens": 0, "note": "scripted fleet: no LLM tokens; cost = trials, tool calls, seconds"}}
+        "llm_tokens": (lambda m: m["input_tokens"] + m["output_tokens"])(METER.snapshot()),
+        "llm": METER.snapshot(),
+        "note": "llm_tokens = every LLM call made in this process (Groq: L3 judge, LLM baseline). 0 means no LLM was used."}}
     path = write_evidence_pack(state_view, Path(cfg["out_dir"]), VALIDITY_NOTE)
     return {"evidence_path": str(path)}
 
@@ -215,6 +259,7 @@ def build_graph(arch: str = "single"):
     b.add_node("run_campaign", make_run_campaign_v2(run_campaign) if arch == "multi" else run_campaign)
     b.add_node("aggregate", aggregate_node)
     b.add_node("skeptic", skeptic_node)
+    b.add_node("l3", l3_node)
     b.add_node("synthesize", synthesize_node)
     b.add_node("human_gate", human_gate_node)
     b.add_node("finalize", finalize_node)
@@ -223,7 +268,8 @@ def build_graph(arch: str = "single"):
     b.add_conditional_edges("plan", fan_out, ["run_campaign"])
     b.add_edge("run_campaign", "aggregate")
     b.add_edge("aggregate", "skeptic")
-    b.add_edge("skeptic", "synthesize")
+    b.add_edge("skeptic", "l3")
+    b.add_edge("l3", "synthesize")
     b.add_conditional_edges("synthesize", route_after_verdict, ["human_gate", "finalize"])
     b.add_edge("human_gate", "finalize")
     b.add_edge("finalize", END)

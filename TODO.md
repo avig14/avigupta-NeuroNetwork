@@ -12,7 +12,7 @@ Last updated: 18 Nov 2026, ~17:30 IST (freeze 19:00 IST). Git: last pushed `a23f
 - Multi-agent experiment (`docs/multi_agent_results.md`): 4 of 6 predictions held, 2 failed (v2 was not slower: ratio 0.989). Verdicts identical 24/24. v2 fails closed under injected faults; v1 crashed 4/4.
 - Docs added: `docs/architecture.md` (diagram, framework matrix, target contract, privacy, cost, non-goals).
 - Report now carries an automation disclosure and lists soft findings.
-- Still needs an LLM or humans: L3 judge, B calibration (50 labels, kappa), cross-family judges, LangSmith, targets #2 and #3, RAG, real-LLM baseline, bigger hold-out, AgentDojo payloads, customer discovery.
+- LLM layer built (18 Nov, see `docs/llm_layer.md`): L3 judge, real LLM baseline, judge red-team. Still needs humans or more time: B calibration (50 labels, kappa), LangSmith, targets #2 and #3, RAG, bigger hold-out, AgentDojo payloads, customer discovery.
 - Still needs the user: enable GitHub Actions, record demo, review `team.json`, commit timing.
 
 
@@ -41,7 +41,7 @@ Last updated: 18 Nov 2026, ~17:30 IST (freeze 19:00 IST). Git: last pushed `a23f
 - [x] L0c claim-vs-state: **regex extraction** (plan says LLM extraction; no key). Code verifies against the diff.
 - [x] L1: pass^k + Wilson CI. Plan numbers (n=6 to 73) checked in tests.
 - [ ] L2 trajectory checks (plan marks later).
-- [ ] L3 LLM judge. No API key. Blocks meta-eval B.
+- [x] L3 LLM judge (soft-only, untrusted-data wrapper, error != pass). Meta-eval B (human calibration) still NOT done: no human labels.
 - [x] Skeptic: **deterministic** replay + evidence check (plan says LLM skeptic).
 - [x] L4 human gate via LangGraph `interrupt()` + `Command(resume=...)` (tested: accept / reject / defer).
 
@@ -78,7 +78,7 @@ Last updated: 18 Nov 2026, ~17:30 IST (freeze 19:00 IST). Git: last pushed `a23f
 - [ ] LangSmith tracing (plan 6.x). Not wired. No key.
 
 ## 3. Honest deviations from plan.md (must be said in the demo)
-1. **No LLM anywhere.** Fleet agents, adversary, L0c extractor, skeptic, Baseline 1 are all deterministic code.
+1. **Core gate has no LLM.** Fleet agents, adversary, L0c extractor, skeptic are deterministic code. LLM parts (L3, real baseline) were added 18 Nov and tested on SMALL samples only. The judge prompt was tuned on dev agents; hold-out was not used for tuning. The fleet agents are scripts, so judge-family bias on real LLM targets is untested.
 2. Scripted-agent results test the **plumbing**. They are NOT evidence the gate catches defects in real LLM agents.
 3. Fleet builder = grader author = same person. Hold-out is biased in the gate's favour (plan 8.5 wants different people). The hold-out was frozen before the first hold-out run, but after the scenarios and graders existed.
 4. F (flip rate) and D (skeptic delta) are ~0 by construction (deterministic agents). Weak evidence.
@@ -113,7 +113,7 @@ Build-bearing sections are 5, 6, 7, 8, 9, 10, 12 (P0a to P3). Sections 0-4, 11, 
 | Plan item | Status | Proof |
 |---|---|---|
 | LangGraph: profile, plan, campaigns, executor, L0/L1, skeptic, interrupt, verdict | DONE | `orchestrator/graph.py`; end-to-end runs |
-| L3 in the graph | NOT DONE | no LLM key |
+| L3 in the graph | DONE (opt-in) | `--l3`; soft findings only |
 | L0 SQLite diff + canary scanner | DONE | graders/l0.py |
 | Target interface contract (5.1) | PARTIAL | task channel = Python `Task` object, NOT an OpenAI-compatible chat endpoint; tool channel = MCP (in-memory + Streamable HTTP). No stdio. |
 | Framework matrix (Step 2) | NOT DONE | document only |
@@ -161,8 +161,8 @@ Build-bearing sections are 5, 6, 7, 8, 9, 10, 12 (P0a to P3). Sections 0-4, 11, 
 | E | DROPPED by plan | |
 | F | DONE (weak) | 0/18 flips over 3 audits (Wilson 0.00-0.18). Deterministic by construction |
 | G | DONE | from own records, NOT LangSmith: 54/54 audits complete, 0 retries |
-| I | DONE (weak) | gate recall 1.00 vs text-only stand-in 0.13 (d_recall +0.87). Stand-in is NOT an LLM judge; the gap says little about a real LLM baseline |
-| Baseline 1 (LLM judge, different family) | NOT DONE | stand-in only |
+| I | DONE (weak; real-LLM baseline in `llm_eval_holdout_sample.json`) | gate recall 1.00 vs text-only stand-in 0.13 (d_recall +0.87). Stand-in is NOT an LLM judge; the gap says little about a real LLM baseline |
+| Baseline 1 (LLM judge, different family) | DONE on a small sample | gpt-oss-120b text-only: recall 3/6, false flags 2/5 on hold-out+clean sample (4 trials/agent). Same-author scripted fleet. |
 | Baseline 2 (layer removed) | PARTIAL | L0c off: no defect becomes SHIP (liar agents still fail reliability scenarios -> pass^k<1 -> SWC), but d05 verdict drops BLOCK -> SWC (checked: exit 2, pass^5=0.70). So L0c adds severity, not a new catch, on this fleet. Pure L0c-only catch shown by unit test. Meta 'newly missed' counts SHIP only. Other layers not ablated |
 | Baseline 3 (promptfoo) | NOT DONE | optional |
 | Fleet >= 35 defect instances | NOT MET | 15 |

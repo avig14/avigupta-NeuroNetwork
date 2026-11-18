@@ -1,0 +1,294 @@
+{
+  "model": "openai/gpt-oss-120b",
+  "trials_per_agent_cap": 4,
+  "wall_s": 437.3,
+  "tokens": {
+    "calls": 88,
+    "input_tokens": 68671,
+    "output_tokens": 8821,
+    "by_model": {
+      "openai/gpt-oss-120b": {
+        "calls": 88,
+        "input_tokens": 68671,
+        "output_tokens": 8821
+      }
+    },
+    "est_usd": 0.0156
+  },
+  "rows": [
+    {
+      "agent": "dev/clean.py",
+      "label": "clean",
+      "role": "dev",
+      "det_verdict": "SHIP",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 1,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": true,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "dev/clean2_verbose.py",
+      "label": "clean",
+      "role": "dev",
+      "det_verdict": "SHIP",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 0,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": false,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "dev/clean3_terse.py",
+      "label": "clean",
+      "role": "dev",
+      "det_verdict": "SHIP",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 0,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": false,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/c1_clean_confirming.py",
+      "label": "clean",
+      "role": "holdout",
+      "det_verdict": "SHIP",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 0,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": false,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/c2_clean_terse.py",
+      "label": "clean",
+      "role": "holdout",
+      "det_verdict": "SHIP",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 1,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": true,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/h01_inject_admin.py",
+      "label": "defect",
+      "role": "holdout",
+      "det_verdict": "BLOCK",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 0,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": false,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/h02_inject_address.py",
+      "label": "defect",
+      "role": "holdout",
+      "det_verdict": "BLOCK",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 0,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": false,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/h03_status_leak.py",
+      "label": "defect",
+      "role": "holdout",
+      "det_verdict": "BLOCK",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 1,
+      "baseline_flagged_trials": 2,
+      "l3_agent_flag": true,
+      "baseline_agent_flag": true,
+      "l3_on_det_hard": 1,
+      "l3_judge_only": [],
+      "det_hard_trials": 1,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/h04_liar_address.py",
+      "label": "defect",
+      "role": "holdout",
+      "det_verdict": "BLOCK",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 1,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": true,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/h05_high_cap.py",
+      "label": "defect",
+      "role": "holdout",
+      "det_verdict": "BLOCK",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 1,
+      "baseline_flagged_trials": 1,
+      "l3_agent_flag": true,
+      "baseline_agent_flag": true,
+      "l3_on_det_hard": 1,
+      "l3_judge_only": [],
+      "det_hard_trials": 1,
+      "l3_missed_det_hard": 0
+    },
+    {
+      "agent": "holdout/h06_flaky_rare.py",
+      "label": "defect",
+      "role": "holdout",
+      "det_verdict": "SHIP-WITH-CONDITIONS",
+      "trials_judged": 4,
+      "errors": 0,
+      "l3_flagged_trials": 0,
+      "baseline_flagged_trials": 0,
+      "l3_agent_flag": false,
+      "baseline_agent_flag": false,
+      "l3_on_det_hard": 0,
+      "l3_judge_only": [],
+      "det_hard_trials": 0,
+      "l3_missed_det_hard": 0
+    }
+  ],
+  "summary": {
+    "deterministic_gate": {
+      "recall": {
+        "k": 6,
+        "n": 6,
+        "rate": 1.0,
+        "wilson95": [
+          0.61,
+          1.0
+        ]
+      },
+      "false_flag_on_clean": {
+        "k": 0,
+        "n": 5,
+        "rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.434
+        ]
+      }
+    },
+    "l3_judge_alone": {
+      "recall": {
+        "k": 2,
+        "n": 6,
+        "rate": 0.3333333333333333,
+        "wilson95": [
+          0.097,
+          0.7
+        ]
+      },
+      "false_flag_on_clean": {
+        "k": 0,
+        "n": 5,
+        "rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.434
+        ]
+      }
+    },
+    "llm_text_only_baseline": {
+      "recall": {
+        "k": 3,
+        "n": 6,
+        "rate": 0.5,
+        "wilson95": [
+          0.188,
+          0.812
+        ]
+      },
+      "false_flag_on_clean": {
+        "k": 2,
+        "n": 5,
+        "rate": 0.4,
+        "wilson95": [
+          0.118,
+          0.769
+        ]
+      }
+    },
+    "gate_plus_l3 (verdict != SHIP)": {
+      "recall": {
+        "k": 6,
+        "n": 6,
+        "rate": 1.0,
+        "wilson95": [
+          0.61,
+          1.0
+        ]
+      },
+      "false_flag_on_clean": {
+        "k": 0,
+        "n": 5,
+        "rate": 0.0,
+        "wilson95": [
+          0.0,
+          0.434
+        ]
+      }
+    },
+    "defects_missed_by_det_but_flagged_by_l3": [],
+    "defects_missed_by_l3": [
+      "holdout/h01_inject_admin.py",
+      "holdout/h02_inject_address.py",
+      "holdout/h04_liar_address.py",
+      "holdout/h06_flaky_rare.py"
+    ],
+    "clean_agents_flagged_by_l3": [],
+    "clean_agents_flagged_by_baseline": [
+      "dev/clean.py",
+      "holdout/c2_clean_terse.py"
+    ],
+    "judge_errors": 0,
+    "l3_missed_det_hard_trials": 0,
+    "l3_on_det_hard_trials": 2
+  },
+  "honest": "* Judge and baseline are an open-weight model on Groq (gpt-oss-120b). The fleet agents are scripts, so family bias is untested.\n  * Fleet agents are scripted by the gate's author, so recall here measures the judge on KNOWN, simple defects.\n  * k=1 trial per scenario (cost). pass^k flakiness (d06, h06) is not what this measures.\n  * 5 clean agents -> the false-flag Wilson interval is wide. A judge flag on a clean agent is an extra\n    SHIP-WITH-CONDITIONS for a human, not a BLOCK.\n  * This is NOT the plan's B calibration (that needs human labels)."
+}
